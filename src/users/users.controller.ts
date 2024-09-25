@@ -4,17 +4,21 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { Serialize, SerializerInterceptor } from 'src/interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 @Serialize(UserDto)   // it is the same as  @UseInterceptors(new SerializerInterceptor(UserDto)) but to make it easyer to read 
 // by the way we can put interception (serialize) before each route or for the full controller 
 
 export class UsersController {
-    constructor(private usersService: UsersService) { }
+    constructor(
+        private usersService: UsersService,
+        private authService : AuthService
+    ) { }
 
     @Post("/signup")
     createUser(@Body() body: CreateUserDto) {
-        this.usersService.create(body.email, body.password)
+        return this.authService.signup(body.email,body.password)
     }
 
     @Get("/:id")
